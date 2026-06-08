@@ -1,0 +1,67 @@
+name: kernel
+sha1: 10188a0c60f09bbb2a820ff812bbb8c583a0a7b1
+options:
+    # paths
+    basename: kernel
+    target_path: in/KERNEL
+    base_path: ../..
+    
+    asm_path: asm/kernel
+    src_path: src/kernel
+    asset_path: assets/kernel
+    build_path: build
+    subalign: 8
+
+    extensions_path: tools/splat_ext 
+    symbol_addrs_path: config/kernel/symbol_addrs.txt
+    reloc_addrs_path: config/kernel/reloc_addrs.txt
+    undefined_funcs_auto_path: config/kernel/undefined_funcs_auto.txt
+    undefined_syms_auto_path:  config/kernel/undefined_syms_auto.txt
+
+    migrate_rodata_to_functions: True
+    named_regs_for_c_funcs: False
+    make_full_disasm_for_code: True
+
+    # compiler 
+    compiler: GCC
+    platform: ps2
+
+    string_encoding: ASCII
+    
+    section_order: [".text", ".rodata", ".data", ".bss"]
+
+segments:
+    - name: main
+      type: code
+      start: 0x0
+      vram: 0x80000000
+      subsegments:
+        # .text
+        - [0x0, asm, vec]
+        - [0x1000, asm, start]
+        - [0x3100, asm, syscall_thread]
+        - [0x3ac0, asm, thread]
+        - [0x6420, asm, list]
+        - [0x64f0, asm, tlb]
+        - [0x6740, asm, sif]
+        - [0x9a50, asm, gs]
+        - [0xe830, asm, config]
+        - [0xec08, asm, gif]
+        - [0xf150, asm, init]
+        - [0xf450, asm, dmac]
+        - [0xf568, asm, vu]
+        - [0xfe18, asm, deci2unk]
+        - [0x10530, asm, deci2mgr]
+        - [0x112c0, asm, sbus]
+        - [0x117f8, asm, deci2kprt]
+        - [0x11ad0, asm, queue]
+        - [0x11ba8, asm, sprintf]
+        - [0x123c0, asm, deci2dbg]
+        - [0x15700, c, sio]
+        - [0x158a8, asm, deci2relay]
+        - [0x18000, rodata]
+        - [0x19160, .rodata, sio]
+        - [0x191a8, rodata, deci2relay]
+
+    - [0x193b8]
+        

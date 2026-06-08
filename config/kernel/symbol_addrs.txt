@@ -1,0 +1,4 @@
+kstart = 0x80001000; // type:func
+kprintf = 0x80007d20; // type:func
+InitGIF = 0x8000ec68; // type:func
+
