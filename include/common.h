@@ -46,4 +46,6 @@ struct pif_reg {
 	/* 0x40 */ u_int fifo;
 };
 
+int kprintf(const char *fmt, ...);
+
 #endif // COMMON_H_
