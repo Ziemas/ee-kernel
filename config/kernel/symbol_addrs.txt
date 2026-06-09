@@ -1,4 +1,11 @@
 kstart = 0x80001000; // type:func
+
+func_80001518 = 0x80001518; // type:func size:0x30
+func_80001548 = 0x80001548; // type:func size:0x30
+func_80001578 = 0x80001578; // type:func size:0x30
+
+func_80001D98 = 0x80001D98; // type:func size:0xdc
+
 kprintf = 0x80007d20; // type:func
 InitGIF = 0x8000ec68; // type:func
 
@@ -10,7 +17,7 @@ deci2_err_cause = 0x80018920; // size:0x30
 
 // not jumptables, function ptr arrays
 D_800174E8 = 0x800174E8;
-D_80017568 = 0x80017568; 
+D_80017568 = 0x80017568;
 
 // Set alignment for all jump tables
 jtbl_80017380 = 0x80017380; // align:0x10
@@ -30,4 +37,3 @@ jtbl_80019070 = 0x80019070; // align:0x10
 jtbl_800189B0 = 0x800189B0; // align:0x10
 jtbl_80018B50 = 0x80018B50; // align:0x10
 jtbl_80018B70 = 0x80018B70; // align:0x10
-

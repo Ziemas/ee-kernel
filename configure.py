@@ -38,13 +38,19 @@ build_targets = [
     "kernel",
 ]
 
+fpic_tus = {
+    "src/kernel/intr.c",
+}
+
 TARGET_ELFS = [
-    Path(f"in/{target.upper()}") for target in build_targets 
+    Path(f"in/{target.upper()}") for target in build_targets
 ]
+
 
 def exec_shell(command: List[str], stdout=subprocess.PIPE) -> str:
     ret = subprocess.run(command, stdout=stdout, stderr=subprocess.PIPE, text=True)
     return ret.stdout
+
 
 def clean():
     if os.path.exists(".splache"):
@@ -55,12 +61,13 @@ def clean():
         os.remove("build.ninja")
 
     for tgt in build_targets:
-        if os.path.exists(f"{tgt}.ld") :
+        if os.path.exists(f"{tgt}.ld"):
             os.remove(f"{tgt}.ld")
 
     shutil.rmtree("asm", ignore_errors=True)
     shutil.rmtree("assets", ignore_errors=True)
     shutil.rmtree("build", ignore_errors=True)
+
 
 def write_rules(ninja):
     ninja.rule(
@@ -72,7 +79,7 @@ def write_rules(ninja):
     ninja.rule(
             "cc",
             description="cc $in",
-            command=f"{COMPILE_CMD} $in -o $out && {CROSS}strip $out -N dummy-symbol-name",
+            command=f"{COMPILE_CMD} $cflags $in -o $out && {CROSS}strip $out -N dummy-symbol-name",
     )
 
     ninja.rule(
@@ -144,7 +151,12 @@ def build_stuff(tgt: str, ninja, linker_entries: List[LinkerEntry]):
         elif isinstance(seg, splat.segtypes.common.c.CommonSegC):
             src = entry.src_paths[0]
             paths = entry.src_paths
-            build(entry.object_path, paths, "cc")
+
+            cflags = ""
+            if str(src) in fpic_tus:
+                cflags = "-fpic"
+
+            build(entry.object_path, paths, "cc", variables={"cflags": cflags})
 
         elif isinstance(seg, splat.segtypes.common.databin.CommonSegDatabin) or isinstance(seg, splat.segtypes.common.rodatabin.CommonSegRodatabin):
             build(entry.object_path, entry.src_paths, "as")
@@ -153,9 +165,9 @@ def build_stuff(tgt: str, ninja, linker_entries: List[LinkerEntry]):
             print(f"ERROR: Unsupported build segment type {seg.type}")
             sys.exit(1)
 
-    elf_path = f"build/{tgt}.elf" 
+    elf_path = f"build/{tgt}.elf"
     ld_path = f"{tgt}.ld"
-    map_path = f"build/{tgt}.map" 
+    map_path = f"build/{tgt}.map"
     target_ld_args = f"-T config/{tgt}/undefined_syms_auto.txt -T config/{tgt}/undefined_funcs_auto.txt -T config/{tgt}/undefined_syms.txt"
 
     ninja.build(
@@ -342,7 +354,7 @@ def build_objdiff_objects():
 def fix_compile_commands():
     with open("compile_commands.json", "r") as f:
         data = json.load(f)
-    
+
     for entry in data[:]:
         file_path = Path(entry["file"])
         #
