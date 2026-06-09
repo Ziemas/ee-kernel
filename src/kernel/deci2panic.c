@@ -1,5 +1,12 @@
 #include "common.h"
 
+struct deci2_socket {
+    u_short proto;
+    u_short unk;
+    void* opt;
+    void* handler;
+};
+
 struct d2_cause_string {
     int id;
     const char* string;
@@ -15,6 +22,8 @@ const struct d2_cause_string deci2_err_cause[6] = {
 };
 
 void func_80015838(const char* s);
+
+extern struct deci2_socket D_80028BB0[16];
 
 // deci2_panic
 void func_8000FE18(int cause, char* msg)
@@ -34,4 +43,17 @@ void func_8000FE18(int cause, char* msg)
 
     while (1)
         ;
+}
+
+int func_8000FEC8(int sock)
+{
+    if (sock <= 0 || sock > 16) {
+        return 0;
+    }
+
+    if (D_80028BB0[sock].proto) {
+        return 1;
+    }
+
+    return 0;
 }
