@@ -2,3 +2,32 @@ kstart = 0x80001000; // type:func
 kprintf = 0x80007d20; // type:func
 InitGIF = 0x8000ec68; // type:func
 
+func_8000FE18 = 0x8000FE18; // type:func size:0xac
+
+func_8000FF50 = 0x8000FF50; // type:func size:0xf4
+
+deci2_err_cause = 0x80018920; // size:0x30
+
+// not jumptables, function ptr arrays
+D_800174E8 = 0x800174E8;
+D_80017568 = 0x80017568; 
+
+// Set alignment for all jump tables
+jtbl_80017380 = 0x80017380; // align:0x10
+jtbl_800173C0 = 0x800173C0; // align:0x10
+
+jtbl_80018080 = 0x80018080; // align:0x10
+jtbl_80018150 = 0x80018150; // align:0x10
+jtbl_800183A0 = 0x800183A0; // align:0x10
+jtbl_800184D0 = 0x800184D0; // align:0x10
+jtbl_80018CD0 = 0x80018CD0; // align:0x10
+jtbl_80018D60 = 0x80018D60; // align:0x10
+jtbl_80018D90 = 0x80018D90; // align:0x10
+jtbl_80018F70 = 0x80018F70; // align:0x10
+jtbl_80018F90 = 0x80018F90; // align:0x10
+jtbl_80019070 = 0x80019070; // align:0x10
+
+jtbl_800189B0 = 0x800189B0; // align:0x10
+jtbl_80018B50 = 0x80018B50; // align:0x10
+jtbl_80018B70 = 0x80018B70; // align:0x10
+

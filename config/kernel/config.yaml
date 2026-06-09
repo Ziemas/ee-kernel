@@ -25,21 +25,24 @@ options:
     hasm_in_src_path: True
 
     # compiler 
-    compiler: GCC
+    compiler: EEGCC
     platform: ps2
 
     string_encoding: ASCII
     
-    section_order: [".text", ".rodata", ".data", ".bss"]
+    section_order: [".text", ".data", ".rodata", ".bss"]
 
 segments:
     - name: main
+      align: 8
+      subalign: 8
       type: code
       start: 0x0
       vram: 0x80000000
       subsegments:
         # .text
         - [0x0, asm, vec]
+        - [0x380, asm, intr]
         - [0x1000, asm, start]
         - [0x3100, asm, syscall_thread]
         - [0x3ac0, asm, thread]
@@ -52,8 +55,7 @@ segments:
         - [0xf150, asm, init]
         - [0xf450, asm, dmac]
         - [0xf568, asm, vu]
-        - [0xfe18, asm, deci2unk]
-        - [0x10530, asm, deci2mgr]
+        - [0xfe18, c, deci2]
         - [0x112c0, asm, sbus]
         - [0x117f8, asm, deci2kprt]
         - [0x11ad0, asm, queue]
@@ -61,7 +63,11 @@ segments:
         - [0x123c0, asm, deci2dbg]
         - [0x15700, c, sio]
         - [0x158a8, asm, deci2relay]
-        - [0x18000, rodata]
+        - [0x16f80, data]
+        - [0x17b00, data]
+        - [0x18010, rodata]
+        - [0x18920, .rodata, deci2]
+        - [0x18ca0, rodata, sprintf]
         - [0x19160, .rodata, sio]
         - [0x191a8, rodata, deci2relay]
 
