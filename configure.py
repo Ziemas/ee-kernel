@@ -83,6 +83,12 @@ def write_rules(ninja):
     )
 
     ninja.rule(
+            "cc_as",
+            description="cc_as $in",
+            command=f"{COMPILE_CMD} -xassembler-with-cpp $in -o $out && {CROSS}strip $out -N dummy-symbol-name",
+    )
+
+    ninja.rule(
             "ld",
             description="ld $out",
             command=f"{CROSS}ld -EL -Map $mapfile -T $in -o $out $syms",
@@ -143,7 +149,10 @@ def build_stuff(tgt: str, ninja, linker_entries: List[LinkerEntry]):
             continue
         object_paths.add(entry.object_path)
 
-        if isinstance(seg, splat.segtypes.common.asm.CommonSegAsm) or isinstance(
+        if isinstance(seg, splat.segtypes.common.hasm.CommonSegHasm):
+            build(entry.object_path, entry.src_paths, "cc_as")
+
+        elif isinstance(seg, splat.segtypes.common.asm.CommonSegAsm) or isinstance(
             seg, splat.segtypes.common.data.CommonSegData
         ):
             build(entry.object_path, entry.src_paths, "as")
