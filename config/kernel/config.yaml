@@ -41,7 +41,7 @@ segments:
       vram: 0x80000000
       subsegments:
         # .text
-        - [0x0, asm, vec]
+        - [0x0, hasm, vec]
         - [0x380, asm, intr_handler]
         - [0x1000, asm, start]
         - [0x15e0, c, intr]

@@ -1,3 +1,6 @@
+// for convenience, just dump it all into one function
+vectors = 0x80000000; // type:func size:0x380
+
 kstart = 0x80001000; // type:func
 
 func_80001518 = 0x80001518; // type:func size:0x30
@@ -20,9 +23,6 @@ D_800174E8 = 0x800174E8;
 D_80017568 = 0x80017568;
 
 // Set alignment for all jump tables
-jtbl_80017380 = 0x80017380; // align:0x10
-jtbl_800173C0 = 0x800173C0; // align:0x10
-
 jtbl_80018080 = 0x80018080; // align:0x10
 jtbl_80018150 = 0x80018150; // align:0x10
 jtbl_800183A0 = 0x800183A0; // align:0x10
@@ -37,3 +37,11 @@ jtbl_80019070 = 0x80019070; // align:0x10
 jtbl_800189B0 = 0x800189B0; // align:0x10
 jtbl_80018B50 = 0x80018B50; // align:0x10
 jtbl_80018B70 = 0x80018B70; // align:0x10
+
+syscall_handler = 0x80016f80; // size:0x400
+exc_handler = 0x80017380; // size:0x38
+t9_backup = 0x800173b8; // size:0x8
+irq_handler = 0x800173c0; // size:0x40
+
+intc_handler = 0x80017400; // size:0x40
+dmac_handler = 0x80017440; // size:0x40
