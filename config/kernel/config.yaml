@@ -23,6 +23,7 @@ options:
     make_full_disasm_for_code: True
     make_full_disasm_for_hasm: True
     hasm_in_src_path: True
+    generate_asm_macros_files: False
 
     # compiler 
     compiler: EEGCC
@@ -45,7 +46,6 @@ segments:
         - [0x380, asm, intr_handler]
         - [0x1000, asm, start]
         - [0x15e0, c, intr]
-        - [0x1d98, asm, sbus_unk]
         - [0x2318, asm, alarm]
         - [0x29c0, asm, dispatch]
         - [0x2bc0, asm, cache]

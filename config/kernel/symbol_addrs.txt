@@ -49,3 +49,4 @@ dmac_handler = 0x80017440; // size:0x40
 D_8001B418 = 0x8001B418; // size:0xb4
 D_8001B4D0 = 0x8001B4D0; // size:0xc0
 D_8001B590 = 0x8001B590; // size:0xc18
+D_8001C1A8 = 0x8001C1A8; // size:0x80

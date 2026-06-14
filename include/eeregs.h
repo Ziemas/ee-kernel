@@ -28,6 +28,12 @@
 #define R_EE_SIO_REGB0  ((volatile u_char *)0xB000F1B0)
 /** Recieve Buffer Register */
 #define R_EE_SIO_RXFIFO ((volatile u_char *)0xB000F1C0)
+
+#define R_EE_SBUS_MSFLAG ((volatile u_int *)0xB000F220)
+#define R_EE_SBUS_SMFLAG ((volatile u_int *)0xB000F230)
+#define R_EE_SBUS_STAT   ((volatile u_int *)0xB000F240)
+
+#define wmb() do {asm volatile("":::"memory");} while(0)
 // clang-format on
 
 #endif // EEREGS_H_

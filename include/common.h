@@ -26,7 +26,7 @@ enum {
     INTC_TIM3 = 12,
     INTC_SFIFO = 13,
     INTC_VU0WD = 14,
-	INTC_MAX,
+    INTC_MAX,
 };
 
 enum {
@@ -44,7 +44,7 @@ enum {
     DMAC_CIS = 13,
     DMAC_MEIS = 14,
     DMAC_BEIS = 15,
-	DMAC_MAX,
+    DMAC_MAX,
 };
 
 #define PIFREG ((volatile struct pif_reg*)0xbf803800)
@@ -86,5 +86,16 @@ struct pif_reg {
 };
 
 int kprintf(const char* fmt, ...);
+
+struct list_head {
+    // TODO think about the order
+    struct list_head *prev, *next;
+};
+
+static inline void list_init(struct list_head* l)
+{
+    l->next = l;
+    l->prev = l;
+}
 
 #endif // COMMON_H_
