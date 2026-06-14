@@ -40,6 +40,7 @@ build_targets = [
 
 fpic_tus = {
     "src/kernel/intr.c",
+    "src/kernel/alarm.c",
 }
 
 TARGET_ELFS = [

@@ -4,10 +4,10 @@
 // sio putc
 char func_80015700(char c)
 {
-    while ((*R_EE_SIO_ISR & 0xf000) == 0x8000)
+    while ((*SIO_ISR & 0xf000) == 0x8000)
         ;
 
-    *R_EE_SIO_TXFIFO = c;
+    *SIO_TXFIFO = c;
 
     return c;
 }
@@ -15,11 +15,11 @@ char func_80015700(char c)
 // sio status
 void func_80015748()
 {
-    u_int isr = *R_EE_SIO_ISR;
+    u_int isr = *SIO_ISR;
     u_int lsr;
 
     if (isr & 4) {
-        lsr = *R_EE_SIO_LSR;
+        lsr = *SIO_LSR;
         if (lsr & 8) {
             kprintf("UART: Frame error.");
         } else if (lsr & 4) {
@@ -28,14 +28,14 @@ void func_80015748()
             kprintf("UART: Overrun error.");
         }
 
-        *R_EE_SIO_LSR = 0xe;
+        *SIO_LSR = 0xe;
     }
 
-    while (*R_EE_SIO_ISR & 0xf00) {
-        *R_EE_SIO_RXFIFO;
+    while (*SIO_ISR & 0xf00) {
+        *SIO_RXFIFO;
     }
 
-    *R_EE_SIO_ISR = 7;
+    *SIO_ISR = 7;
 }
 
 // PIF puts

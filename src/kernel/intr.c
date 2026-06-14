@@ -1,3 +1,4 @@
+#include "intr.h"
 #include "common.h"
 #include "eeregs.h"
 
@@ -15,11 +16,9 @@ struct IntQueue {
 };
 
 // intc handlers
-extern struct IntQueue D_8001B418[INTC_MAX];
+extern struct IntQueue intc_queue[INTC_MAX];
 // dmac handlers
-extern struct IntQueue D_8001B4D0[DMAC_MAX];
-
-extern struct IntHandler D_8001B590[129];
+extern struct IntQueue dmac_queue[DMAC_MAX];
 
 // int handler pool list
 extern struct list_head D_8001B410;
@@ -33,14 +32,14 @@ struct list_head* func_800064B0(struct list_head* node);
 void func_800064D0(struct list_head*, struct list_head*);
 
 // backing array for intc pool entries
-extern struct IntHandler D_8001B590[129];
+extern struct IntHandler int_handler[129];
 
 // VSYNC flag ptr
 extern int* D_8001B404;
 // VSYNC CSR ptr
 extern u_long* D_8001B408;
 
-void (*D_8001C1A8[32])();
+extern void (*sbus_int_handler[32])();
 
 void func_80000DC0(int);
 int func_800029C0(void*, void*, ...);
@@ -51,10 +50,6 @@ u_int func_800112C0();
 extern void* D_800174E4;
 
 int func_80002690();
-
-int func_80000700(int, void*);
-int func_80000780(int, void*);
-int func_800008C0(int);
 
 // pop int handler pool
 struct IntHandler* func_800015E0()
@@ -74,7 +69,7 @@ struct IntHandler* func_800015E0()
 // return to pool
 void func_80001628(int arg0)
 {
-    func_800064D0(&D_8001B410, &D_8001B590[arg0].l);
+    func_800064D0(&D_8001B410, &int_handler[arg0].l);
     D_8001B400 -= 1;
 }
 
@@ -96,8 +91,8 @@ void func_80001670(int inum)
         }
     }
 
-    hnd = (struct IntHandler*)D_8001B418[inum].l.next;
-    for (i = 0; i < D_8001B418[inum].entries; i++) {
+    hnd = (struct IntHandler*)intc_queue[inum].l.next;
+    for (i = 0; i < intc_queue[inum].entries; i++) {
         if (hnd->state == 2) {
             asm volatile("move %0, $gp \n" : "=r"(gp));
             asm volatile("move $gp, %0 \n" ::"r"(hnd->gp));
@@ -131,8 +126,8 @@ void func_800017D8(int inum)
     u_int gp, epc;
     int i, res;
 
-    hnd = (struct IntHandler*)D_8001B4D0[inum].l.next;
-    for (i = 0; i < D_8001B4D0[inum].entries; i++) {
+    hnd = (struct IntHandler*)dmac_queue[inum].l.next;
+    for (i = 0; i < dmac_queue[inum].entries; i++) {
         if (hnd->state == 2) {
             asm volatile("move %0, $gp \n" : "=r"(gp));
             asm volatile("move $gp, %0 \n" ::"r"(hnd->gp));
@@ -186,22 +181,22 @@ int func_800018F0(int cause, void (*handler)(int, void*, void*), int next, void*
 
     switch (next) {
     case -1:
-        func_800064D0(&D_8001B418[cause].l, &hnd->l);
+        func_800064D0(&intc_queue[cause].l, &hnd->l);
         break;
     case 0:
-        func_800064D0(D_8001B418[cause].l.next, &hnd->l);
+        func_800064D0(intc_queue[cause].l.next, &hnd->l);
         break;
     default:
-        if (next < 0 || next - 1 > 0x7fu || D_8001B590[next].state == 3) {
+        if (next < 0 || next - 1 > 0x7fu || int_handler[next].state == 3) {
             return -1;
         }
 
-        func_800064D0(&D_8001B590[next].l, &hnd->l);
+        func_800064D0(&int_handler[next].l, &hnd->l);
         break;
     }
-    D_8001B418[cause].entries++;
+    intc_queue[cause].entries++;
 
-    return hnd - D_8001B590;
+    return hnd - int_handler;
 }
 
 // AddIntcHandler
@@ -223,19 +218,19 @@ int func_80001AB0(int cause, int hid)
         return -1;
     }
 
-    if (D_8001B590[hid].state == 3) {
+    if (int_handler[hid].state == 3) {
         return -1;
     }
 
-    D_8001B590[hid].state = 3;
-    D_8001B590[hid].handler = NULL;
+    int_handler[hid].state = 3;
+    int_handler[hid].handler = NULL;
 
-    func_800064B0(&D_8001B590[hid].l);
+    func_800064B0(&int_handler[hid].l);
     func_80001628(hid);
 
-    D_8001B418[cause].entries--;
+    intc_queue[cause].entries--;
 
-    return D_8001B418[cause].entries;
+    return intc_queue[cause].entries;
 }
 
 int func_80001B50(int cause, void (*handler)(int, void*, void*), int next, void* arg, int unk)
@@ -261,22 +256,22 @@ int func_80001B50(int cause, void (*handler)(int, void*, void*), int next, void*
 
     switch (next) {
     case -1:
-        func_800064D0(&D_8001B4D0[cause].l, &hnd->l);
+        func_800064D0(&dmac_queue[cause].l, &hnd->l);
         break;
     case 0:
-        func_800064D0(D_8001B4D0[cause].l.next, &hnd->l);
+        func_800064D0(dmac_queue[cause].l.next, &hnd->l);
         break;
     default:
-        if (next < 0 || next - 1 > 0x7fu || D_8001B590[next].state == 3) {
+        if (next < 0 || next - 1 > 0x7fu || int_handler[next].state == 3) {
             return -1;
         }
 
-        func_800064D0(&D_8001B590[next].l, &hnd->l);
+        func_800064D0(&int_handler[next].l, &hnd->l);
         break;
     }
-    D_8001B4D0[cause].entries++;
+    dmac_queue[cause].entries++;
 
-    return hnd - D_8001B590;
+    return hnd - int_handler;
 }
 
 int func_80001CB8(int cause, void (*handler)(int, void*, void*), int next, void* arg)
@@ -295,19 +290,19 @@ int func_80001CF8(int cause, int hid)
         return -1;
     }
 
-    if (D_8001B590[hid].state == 3) {
+    if (int_handler[hid].state == 3) {
         return -1;
     }
 
-    D_8001B590[hid].state = 3;
-    D_8001B590[hid].handler = NULL;
+    int_handler[hid].state = 3;
+    int_handler[hid].handler = NULL;
 
-    func_800064B0(&D_8001B590[hid].l);
+    func_800064B0(&int_handler[hid].l);
     func_80001628(hid);
 
-    D_8001B4D0[cause].entries--;
+    dmac_queue[cause].entries--;
 
-    return D_8001B4D0[cause].entries;
+    return dmac_queue[cause].entries;
 }
 
 void func_80001D98(int cause)
@@ -340,10 +335,10 @@ void func_80001D98(int cause)
 
         tmp = 1 << bit;
         smflag &= ~tmp;
-        hnd = D_8001C1A8[bit];
+        hnd = sbus_int_handler[bit];
         if (hnd) {
             if (bit < 16) {
-                *R_EE_SBUS_SMFLAG = tmp;
+                *SBUS_SMFLAG = tmp;
                 func_800029C0(D_800174E4, hnd, bit);
             } else {
                 hnd(bit);
@@ -358,11 +353,11 @@ int func_80001E78(int cause, void (*handler)())
         return -1;
     }
 
-    if (D_8001C1A8[cause]) {
+    if (sbus_int_handler[cause]) {
         return -1;
     }
 
-    D_8001C1A8[cause] = handler;
+    sbus_int_handler[cause] = handler;
     return cause;
 }
 
@@ -381,7 +376,7 @@ int func_80001EE8(int cause)
         return -1;
     }
 
-    D_8001C1A8[cause] = NULL;
+    sbus_int_handler[cause] = NULL;
     return cause;
 }
 
@@ -400,20 +395,20 @@ int func_80001F40(int cause)
         return -1;
     }
 
-    *R_EE_SBUS_MSFLAG = 1 << cause;
+    *SBUS_MSFLAG = 1 << cause;
 
-    *R_EE_SBUS_STAT = 0x100;
-    *R_EE_SBUS_STAT = 0x100;
-    *R_EE_SBUS_STAT = 0x100;
-    *R_EE_SBUS_STAT = 0x100;
-    *R_EE_SBUS_STAT = 0x100;
-    *R_EE_SBUS_STAT = 0x100;
-    *R_EE_SBUS_STAT = 0x100;
-    *R_EE_SBUS_STAT = 0x100;
-    *R_EE_SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
+    *SBUS_STAT = 0x100;
 
     // cast away volatile...
-    *(u_int*)R_EE_SBUS_STAT = 0x40100;
+    *(u_int*)SBUS_STAT = 0x40100;
 
     return cause;
 }
@@ -429,28 +424,28 @@ int func_80001FB0(int cause)
 
 int func_80001FE0(int hid)
 {
-    D_8001B590[hid].state = 2;
+    int_handler[hid].state = 2;
 
     return hid;
 }
 
 int func_80002008(int hid)
 {
-    D_8001B590[hid].state = 1;
+    int_handler[hid].state = 1;
 
     return hid;
 }
 
 int func_80002030(int hid)
 {
-    D_8001B590[hid].state = 2;
+    int_handler[hid].state = 2;
 
     return hid;
 }
 
 int func_80002058(int hid)
 {
-    D_8001B590[hid].state = 1;
+    int_handler[hid].state = 1;
 
     return hid;
 }
@@ -460,10 +455,6 @@ int func_80002080()
     return D_8001B400;
 }
 
-#if 1
-INCLUDE_ASM("asm/kernel/nonmatchings/intr", func_80002090);
-INCLUDE_ASM("asm/kernel/nonmatchings/intr", func_800021F0);
-#else
 int func_80002090()
 {
     int i;
@@ -471,8 +462,8 @@ int func_80002090()
     D_8001B400 = 0;
 
     for (i = 0; i < INTC_MAX; i++) {
-        D_8001B418[i].entries = 0;
-        list_init(&D_8001B418[i].l);
+        intc_queue[i].entries = 0;
+        list_init(&intc_queue[i].l);
         func_80000700(i, func_80001670);
     }
 
@@ -480,23 +471,23 @@ int func_80002090()
     func_80000700(INTC_SBUS, func_80001D98);
 
     for (i = 0; i < 32; i++) {
-        D_8001C1A8[i] = NULL;
+        sbus_int_handler[i] = NULL;
     }
 
-    func_800008C0(INTC_SBUS);
+    EnableIntc(INTC_SBUS);
 
     for (i = 0; i < DMAC_MAX; i++) {
-        D_8001B4D0[i].entries = 0;
-        list_init(&D_8001B4D0[i].l);
+        dmac_queue[i].entries = 0;
+        list_init(&dmac_queue[i].l);
         func_80000780(i, func_800017D8);
     }
 
     list_init(&D_8001B410);
 
-    for (i = 0; i < 129; i++) {
-        D_8001B590[i].handler = NULL;
-        D_8001B590[i].state = 3;
-        func_800064D0(&D_8001B410, &D_8001B590[i].l);
+    for (i = 1; i < 129; i++) {
+        int_handler[i].handler = NULL;
+        int_handler[i].state = 3;
+        func_800064D0(&D_8001B410, &int_handler[i].l);
     }
 
     return 0x81;
@@ -513,27 +504,26 @@ int func_800021F0()
             continue;
         }
 
-        D_8001B418[i].entries = 0;
-        list_init(&D_8001B418[i].l);
+        intc_queue[i].entries = 0;
+        list_init(&intc_queue[i].l);
         func_80000700(i, func_80001670);
     }
 
     func_80000700(INTC_TIM3, func_80002690);
 
     for (i = 0; i < DMAC_MAX; i++) {
-        D_8001B4D0[i].entries = 0;
-        list_init(&D_8001B4D0[i].l);
+        dmac_queue[i].entries = 0;
+        list_init(&dmac_queue[i].l);
         func_80000780(i, func_800017D8);
     }
 
     list_init(&D_8001B410);
 
-    for (i = 0; i < 129; i++) {
-        D_8001B590[i].handler = NULL;
-        D_8001B590[i].state = 3;
-        func_800064D0(&D_8001B410, &D_8001B590[i].l);
+    for (i = 1; i < 129; i++) {
+        int_handler[i].handler = NULL;
+        int_handler[i].state = 3;
+        func_800064D0(&D_8001B410, &int_handler[i].l);
     }
 
     return 0x81;
 }
-#endif

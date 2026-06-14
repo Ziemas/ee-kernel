@@ -35,18 +35,19 @@ options:
 
 segments:
     - name: main
-      align: 8
+      align: 16
       subalign: 8
       type: code
       start: 0x0
       vram: 0x80000000
+      bss_size: 0xa508
       subsegments:
         # .text
         - [0x0, hasm, vec]
         - [0x380, asm, intr_handler]
         - [0x1000, asm, start]
         - [0x15e0, c, intr]
-        - [0x2318, asm, alarm]
+        - [0x2318, c, alarm]
         - [0x29c0, asm, dispatch]
         - [0x2bc0, asm, cache]
         - [0x3100, asm, syscall_thread]
@@ -77,5 +78,6 @@ segments:
         - [0x19160, .rodata, sio]
         - [0x191a8, rodata, deci2relay]
 
+        - { type: bss, vram: 0x800193c0, name: kernel }
     - [0x193b8]
         

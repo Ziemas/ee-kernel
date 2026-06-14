@@ -1,6 +1,11 @@
 // for convenience, just dump it all into one function
 vectors = 0x80000000; // type:func size:0x380
 
+EnableIntc  = 0x800008C0; // type:func
+DisableIntc = 0x80000900; // type:func
+EnableDmac  = 0x80000940; // type:func
+DisableDmac = 0x80000980; // type:func
+
 kstart = 0x80001000; // type:func
 
 func_80001518 = 0x80001518; // type:func size:0x30
@@ -15,8 +20,6 @@ InitGIF = 0x8000ec68; // type:func
 func_8000FE18 = 0x8000FE18; // type:func size:0xac
 
 func_8000FF50 = 0x8000FF50; // type:func size:0xf4
-
-deci2_err_cause = 0x80018920; // size:0x30
 
 // not jumptables, function ptr arrays
 D_800174E8 = 0x800174E8;
@@ -46,7 +49,11 @@ irq_handler = 0x800173c0; // size:0x40
 intc_handler = 0x80017400; // size:0x40
 dmac_handler = 0x80017440; // size:0x40
 
-D_8001B418 = 0x8001B418; // size:0xb4
-D_8001B4D0 = 0x8001B4D0; // size:0xc0
-D_8001B590 = 0x8001B590; // size:0xc18
-D_8001C1A8 = 0x8001C1A8; // size:0x80
+deci2_err_cause = 0x80018920; // size:0x30
+
+intc_queue = 0x8001B418; // size:0xb4
+dmac_queue = 0x8001B4D0; // size:0xc0
+int_handler = 0x8001B590; // size:0xc18
+sbus_int_handler = 0x8001C1A8; // size:0x80
+
+D_8001C738 = 0x8001C738; // size:0x40
