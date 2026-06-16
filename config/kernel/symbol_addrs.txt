@@ -8,6 +8,9 @@ DisableDmac = 0x80000980; // type:func
 
 kstart = 0x80001000; // type:func
 
+// why in .text
+user_context = 0x80001100; // size:0x208
+
 func_80001518 = 0x80001518; // type:func size:0x30
 func_80001548 = 0x80001548; // type:func size:0x30
 func_80001578 = 0x80001578; // type:func size:0x30
