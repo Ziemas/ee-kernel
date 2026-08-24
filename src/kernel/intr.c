@@ -42,12 +42,9 @@ extern u_long* D_8001B408;
 extern void (*sbus_int_handler[32])();
 
 void func_80000DC0(int);
-int func_800029C0(void*, void*, ...);
 
 // get smflag
 u_int func_800112C0();
-
-extern void* D_800174E4;
 
 int func_80002690();
 

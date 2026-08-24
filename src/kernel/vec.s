@@ -1,12 +1,12 @@
 #include "regnames.h"
 
-        .set noat
+        .text
         .set noreorder
-        .section .text
+        .set noat
+
         .global vectors
 vectors:
 
-        .org 0x000
         /* TLB REFILL */
         lui        k0, %hi(t9_backup)
         sd         t9, %lo(t9_backup)(k0)

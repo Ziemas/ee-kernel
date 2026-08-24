@@ -59,4 +59,6 @@ dmac_queue = 0x8001B4D0; // size:0xc0
 int_handler = 0x8001B590; // size:0xc18
 sbus_int_handler = 0x8001C1A8; // size:0x80
 
-D_8001C738 = 0x8001C738; // size:0x40
+D_8001C228 = 0x8001C228; // size:0x8
+D_8001C238 = 0x8001C238; // size:0x500
+D_8001C738 = 0x8001C738; // size:0x41

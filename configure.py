@@ -164,7 +164,7 @@ def build_stuff(tgt: str, ninja, linker_entries: List[LinkerEntry]):
 
             cflags = ""
             if str(src) in fpic_tus:
-                cflags = "-fpic"
+                cflags = "-fpic -g0"
 
             build(entry.object_path, paths, "cc", variables={"cflags": cflags})
 

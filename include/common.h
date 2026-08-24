@@ -85,6 +85,9 @@ struct pif_reg {
     /* 0x40 */ u_int fifo;
 };
 
+int func_800029C0(void*, void*, ...);
+extern void* D_800174E4;
+
 int kprintf(const char* fmt, ...);
 
 struct list_head {
