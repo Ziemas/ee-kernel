@@ -29,8 +29,8 @@ TOOLS_DIR = ROOT / "tools"
 COMPILER_DIR = f"{TOOLS_DIR}/toolchain/ee-gcc29/bin"
 COMMON_INCLUDES = "-Iinclude"
 
-COMPILER_FLAGS = "-O2 -G0 -g"
-COMPILE_CMD = f"{COMPILER_DIR}/ee-gcc -c {COMMON_INCLUDES} {COMPILER_FLAGS}"
+COMPILER_FLAGS = "-O2 -G0"
+COMPILE_CMD = f"{COMPILER_DIR}/ee-gcc -c {COMMON_INCLUDES}"
 
 CROSS = "mips-linux-gnu-"
 
@@ -162,9 +162,11 @@ def build_stuff(tgt: str, ninja, linker_entries: List[LinkerEntry]):
             src = entry.src_paths[0]
             paths = entry.src_paths
 
-            cflags = ""
+            cflags = COMPILER_FLAGS
             if str(src) in fpic_tus:
-                cflags = "-fpic -g0"
+                cflags += " -fpic -g0"
+            else:
+                cflags += " -g"
 
             build(entry.object_path, paths, "cc", variables={"cflags": cflags})
 
